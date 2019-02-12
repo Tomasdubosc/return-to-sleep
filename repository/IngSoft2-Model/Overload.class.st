@@ -5,7 +5,6 @@ Class {
 	#name : #Overload,
 	#superclass : #Card,
 	#instVars : [
-		'id',
 		'value'
 	],
 	#category : #'IngSoft2-Model'

@@ -26,3 +26,8 @@ MoonWalk >> applyEffectTo: aGamePiece ofGamepieceCollection: aCollectionOfPieces
 MoonWalk >> initializeWithADecrement: aPowerValue [
 	decrement := aPowerValue
 ]
+
+{ #category : #Accesing }
+MoonWalk >> name [
+^'a MoonWalk'
+]

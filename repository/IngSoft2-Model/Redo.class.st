@@ -5,7 +5,6 @@ Class {
 	#name : #Redo,
 	#superclass : #Card,
 	#instVars : [
-		'id',
 		'value'
 	],
 	#category : #'IngSoft2-Model'

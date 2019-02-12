@@ -23,7 +23,9 @@ Class {
 		'dices1',
 		'dices2',
 		'board',
-		'judge'
+		'judge',
+		'cards',
+		'aDeckOfCards'
 	],
 	#category : #'IngSoft2-Tests'
 }
@@ -36,6 +38,8 @@ GamepieceTest >> setUp [
 	gamepieces
 		add: gamepiece1;
 		add: gamepiece2.
+	cards:=(CardCreator new) createNCards: 5.
+	aDeckOfCards:= CardsDeck withCards: cards asOrderedCollection .
 	effect0 := NonEffect new.
 	effect1 := MoonWalk withAPowerValue: 2.
 	effect2 := NonEffect new.
@@ -71,8 +75,15 @@ GamepieceTest >> setUp [
 	dices1 add: (LoadedDice withFaces: 1).
 	dices2 := Set new.
 	dices2 add: (LoadedDice withFaces: 2).
-	board := Board withSquares: squares gamepieces: gamepieces andRounds: 2.
-	judge := Judge named: 'Pitana' assuring: players on: board.
+	board := Board
+		withSquares: squares
+		gamepieces: gamepieces
+		andRounds: 2.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: board
+		with: aDeckOfCards
 ]
 
 { #category : #'Gamepiece - tests' }

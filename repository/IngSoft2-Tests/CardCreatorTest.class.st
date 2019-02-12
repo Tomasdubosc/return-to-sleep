@@ -9,20 +9,13 @@ Class {
 
 { #category : #tests }
 CardCreatorTest >> setUp [
-	cardCreator := CardCreator
-		withTotalTypesOfCardsKnowingNumberOfPlayers: 3.
+cardCreator:=CardCreator new.
 ]
 
 { #category : #tests }
-CardCreatorTest >> testACardCreatorReturnACard [
-	| card1 card2 |
-	card1 := cardCreator createAndReturnACard.
-	self assert: card1 class equals: Acceleration.
-	card2 := cardCreator createAndReturnACard.
-	self assert: card2 class equals: Speed
-]
-
-{ #category : #tests }
-CardCreatorTest >> testCreateaCardCreator [
-	self assert: cardCreator totalTypesOfCards equals: 6
+CardCreatorTest >> testCreateACardCreatorThatCreates5Cards [
+ | cardCreator |
+cardCreator:=CardCreator new.
+ self assert: (cardCreator createNCards: 5) size equals: 5
+	
 ]

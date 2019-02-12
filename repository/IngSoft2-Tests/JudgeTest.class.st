@@ -4,7 +4,9 @@ Class {
 	#instVars : [
 		'gamepiece1',
 		'gamepiece2',
-		'gamepieces'
+		'gamepieces',
+		'cardsForDeck',
+		'deck'
 	],
 	#category : #'IngSoft2-Tests'
 }
@@ -17,6 +19,8 @@ JudgeTest >> setUp [
 	gamepieces
 		add: gamepiece1;
 		add: gamepiece2.
+	cardsForDeck:=(CardCreator new) createNCards: 5.
+	deck:= CardsDeck withCards: cardsForDeck asOrderedCollection .
 		
 ]
 
@@ -33,38 +37,29 @@ JudgeTest >> testCreateAJudge [
 		aGamePiece: Gamepiece withInitialPosition
 		aCard: aFirstCard
 		andOtherCard: aSecondCard.
-		
 	players := OrderedCollection new.
-		players
+	players
 		add: player1;
 		add: player2.
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: Board new.
+		on: Board new
+		with: deck.
 	self assert: judge name equals: 'Pitana'
 ]
 
 { #category : #'judge-tests' }
 JudgeTest >> testJudgeGiveCardToAPlayer [
 	| player1 dices1 judge board players squares effect1 effect4 square0 square1 square2 square3 square4 card1 card2 giftedCard nonEffect |
-	nonEffect := NonEffect new. effect1 := MoonWalk withAPowerValue: 2.
+	nonEffect := NonEffect new.
+	effect1 := MoonWalk withAPowerValue: 2.
 	effect4 := SpeedUp withAPowerValue: 2.
-	square0 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: true.
-	square2 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: true.
-	square3 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square4 := Square
-		withAnEffect: effect4
-		thatGivesCard: false.
+	square0 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square1 := Square withAnEffect: nonEffect thatGivesCard: true.
+	square2 := Square withAnEffect: nonEffect thatGivesCard: true.
+	square3 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square4 := Square withAnEffect: effect4 thatGivesCard: false.
 	squares := Dictionary
 		newFrom:
 			{(0 -> square0).
@@ -90,38 +85,28 @@ JudgeTest >> testJudgeGiveCardToAPlayer [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: deck.
 	player1 playsATurnWith: dices1.
 	board updateGamepiecesPositionOnBoard.
 	giftedCard := judge giveCardTo: player1.
 	player1
 		playCard: giftedCard
-		applyTo: players
-		removingCardEffectCausedByCard: card1
-		andTellJudge: judge
+		applyingEffect: board lastSquareEffectApplied
+		andTellJudge:judge.
 ]
 
 { #category : #'judge-tests' }
 JudgeTest >> testJudgeGiveCardsToAPlayer [
-	| player1 dices1 judge board players squares effect1 effect4 square0 square1 square2 square3 square4 card1 card2 giftedCard1 giftedCard2 nonEffect |
+	| player1 dices1 judge board players squares effect1 effect4 square0 square1 square2 square3 square4 card1 card2 giftedCard1 giftedCard2 nonEffect giftedCard3 |
 	nonEffect := NonEffect new.
 	effect1 := MoonWalk withAPowerValue: 2.
 	effect4 := SpeedUp withAPowerValue: 2.
-	square0 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: effect1
-		thatGivesCard: true.
-	square2 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: true.
-	square3 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square4 := Square
-		withAnEffect: effect4
-		thatGivesCard: false.
+	square0 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square1 := Square withAnEffect: effect1 thatGivesCard: true.
+	square2 := Square withAnEffect: nonEffect thatGivesCard: true.
+	square3 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square4 := Square withAnEffect: effect4 thatGivesCard: false.
 	squares := Dictionary
 		newFrom:
 			{(0 -> square0).
@@ -147,36 +132,32 @@ JudgeTest >> testJudgeGiveCardsToAPlayer [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: deck.
 	player1 playsATurnWith: dices1.
 	board updateGamepiecesPositionOnBoard.
 	giftedCard1 := judge giveCardTo: player1.
 	giftedCard2 := judge giveCardTo: player1.
+	giftedCard3 := judge giveCardTo: player1.
 	player1
 		playCard: giftedCard1
-		applyTo: players
-		removingCardEffectCausedByCard: card1
-		andTellJudge: judge.
+		applyingEffect: board lastSquareEffectApplied
+		andTellJudge:judge.
 	self
-		should: [ player1
-				playCard: giftedCard1
-				applyTo: players
-				removingCardEffectCausedByCard: card1
-				andTellJudge: judge ]
+		should: [player1 playCard: giftedCard1
+		applyingEffect: board lastSquareEffectApplied
+		andTellJudge:judge ]
+	
 		raise: CardBelongToPlayerFailed
 		withExceptionDo: [ :exception | 
 			self
 				assert: exception messageText
 				equals: 'This player does not have this card' ].
 	player1
-		playCard: giftedCard2
-		applyingEffect: board lastSquareEffectApplied
-		andTellJudge: judge.
+		playCard: giftedCard3  applyTo: player1 andTellJudge: judge.
 	self
 		should: [ player1
-				playCard: giftedCard2
-				applyingEffect: board lastSquareEffectApplied
-				andTellJudge: judge ]
+				playCard: giftedCard3  applyTo: player1 andTellJudge: judge. ]
 		raise: CardBelongToPlayerFailed
 		withExceptionDo: [ :exception | 
 			self
@@ -187,7 +168,6 @@ JudgeTest >> testJudgeGiveCardsToAPlayer [
 { #category : #'judge-tests' }
 JudgeTest >> testJudgeValidateTurn [
 	| judge turn player1 player2 collectionOfPlayers board squares |
-	
 	player1 := Player
 		withName: 'Sol'
 		aGamePiece: gamepiece1
@@ -202,8 +182,7 @@ JudgeTest >> testJudgeValidateTurn [
 	collectionOfPlayers
 		add: player1;
 		add: player2.
-	turn := PlayingSequence
-		withAllPlayers: collectionOfPlayers.
+	turn := PlayingSequence withAllPlayers: collectionOfPlayers.
 	squares := Set new.
 	squares
 		add: (Square withAnEffect: NonEffect new thatGivesCard: false).
@@ -214,7 +193,8 @@ JudgeTest >> testJudgeValidateTurn [
 	judge := Judge
 		named: 'Pitana'
 		assuring: collectionOfPlayers
-		on: board.
+		on: board
+		with: deck.
 	self
 		should: [ judge validateTurnOf: player2 ]
 		raise: JudgeValidationFailed
@@ -244,21 +224,11 @@ JudgeTest >> testJudgeValidateTurnWhenAPlayerPlaysAPermanentCard [
 	dices := Set new.
 	dices add: (LoadedDice withFaces: 4).
 	nonEffect := NonEffect new.
-	square0 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square2 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square3 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square4 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
+	square0 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square1 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square2 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square3 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square4 := Square withAnEffect: nonEffect thatGivesCard: false.
 	squares := Dictionary
 		newFrom:
 			{(0 -> square0).
@@ -273,13 +243,11 @@ JudgeTest >> testJudgeValidateTurnWhenAPlayerPlaysAPermanentCard [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: deck.
 	judge validateTurnOf: player1.
 	player1 playsATurnWith: dices.
-	player1
-		playCard: card2
-		applyTo: player2
-		andTellJudge: judge.
+	player1 playCard: card2 applyTo: player2 andTellJudge: judge.
 	judge validateRoundsOfPlayers.
 	board updateGamepiecesPositionOnBoard.
 	board applyEffectToAGamepiece: gamepiece1.
@@ -294,10 +262,8 @@ JudgeTest >> testJudgeValidateTurnWhenAPlayerPlaysAPermanentCard [
 	self assert: player2 gamepiece position equals: 2.
 	judge changeTurnOfPlayers.
 	self
-		should: [ player2
-				playCard: card3
-				applyTo: player1
-				andTellJudge: judge ]
+		should:
+			[ player2 playCard: card3 applyTo: player1 andTellJudge: judge ]
 		raise: JudgeValidationFailed
 ]
 
@@ -309,21 +275,11 @@ JudgeTest >> testJudgeValidateWhenPlayerCompletesARound [
 	effect2 := SpeedUp withAPowerValue: 1.
 	effect3 := WormHole withAPowerValue: 2.
 	effect4 := MoonWalk withAPowerValue: 1.
-	square0 := Square
-		withAnEffect: effect0
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: effect1
-		thatGivesCard: false.
-	square2 := Square
-		withAnEffect: effect2
-		thatGivesCard: false.
-	square3 := Square
-		withAnEffect: effect3
-		thatGivesCard: false.
-	square4 := Square
-		withAnEffect: effect4
-		thatGivesCard: false.
+	square0 := Square withAnEffect: effect0 thatGivesCard: false.
+	square1 := Square withAnEffect: effect1 thatGivesCard: false.
+	square2 := Square withAnEffect: effect2 thatGivesCard: false.
+	square3 := Square withAnEffect: effect3 thatGivesCard: false.
+	square4 := Square withAnEffect: effect4 thatGivesCard: false.
 	player := Player
 		withName: 'Sol'
 		aGamePiece: gamepiece1
@@ -345,7 +301,8 @@ JudgeTest >> testJudgeValidateWhenPlayerCompletesARound [
 	judge := Judge
 		named: 'Pitana'
 		assuring: player asOrderedCollection
-		on: board.
+		on: board
+		with: deck.
 	player playsATurnWith: dices.
 	self assert: gamepiece1 position equals: 3.
 	board updateGamepiecesPositionOnBoard.
@@ -367,15 +324,9 @@ JudgeTest >> testJudgeValidateWhenPlayerHasToUndoARoundBecauseOfWormHoleEffect [
 	| board squares square1 square2 player dices effect1 square0 judge players nonEffect |
 	nonEffect := NonEffect new.
 	effect1 := WormHole withAPowerValue: 3.
-	square0 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: effect1
-		thatGivesCard: false.
-	square2 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
+	square0 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square1 := Square withAnEffect: effect1 thatGivesCard: false.
+	square2 := Square withAnEffect: nonEffect thatGivesCard: false.
 	player := Player
 		withName: 'Sol'
 		aGamePiece: gamepiece1
@@ -397,10 +348,10 @@ JudgeTest >> testJudgeValidateWhenPlayerHasToUndoARoundBecauseOfWormHoleEffect [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: deck.
 	player playsATurnWith: dices.
-	gamepiece1
-		positionOnBoardBasedOnNSquares: board squares size.
+	gamepiece1 positionOnBoardBasedOnNSquares: board squares size.
 	self assert: gamepiece1 position equals: 1.
 	board applyEffectToAGamepiece: gamepiece1.
 	self assert: gamepiece1 position equals: -2.
@@ -410,25 +361,15 @@ JudgeTest >> testJudgeValidateWhenPlayerHasToUndoARoundBecauseOfWormHoleEffect [
 
 { #category : #'judge-tests' }
 JudgeTest >> testJugdeDeterminateWinner [
-	| player1 player2 dices1 judge board players winner squares  effect1 effect4 square0 square1 square2 square3 square4 dices2 nonEffect |
+	| player1 player2 dices1 judge board players winner squares effect1 effect4 square0 square1 square2 square3 square4 dices2 nonEffect |
 	nonEffect := NonEffect new.
 	effect1 := MoonWalk withAPowerValue: 2.
 	effect4 := SpeedUp withAPowerValue: 2.
-	square0 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: effect1
-		thatGivesCard: false.
-	square2 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square3 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square4 := Square
-		withAnEffect: effect4
-		thatGivesCard: false.
+	square0 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square1 := Square withAnEffect: effect1 thatGivesCard: false.
+	square2 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square3 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square4 := Square withAnEffect: effect4 thatGivesCard: false.
 	squares := Dictionary
 		newFrom:
 			{(0 -> square0).
@@ -461,7 +402,8 @@ JudgeTest >> testJugdeDeterminateWinner [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: deck.
 	[ judge playerHasWon ]
 		whileFalse: [ judge validateTurnOf: player1.
 			player1 playsATurnWith: dices1.
@@ -493,24 +435,12 @@ JudgeTest >> testJugdeTellsRankingOfAPlayer [
 	effect2 := MoonWalk withAPowerValue: 2.
 	effect3 := WormHole withAPowerValue: 2.
 	effect4 := AtomicBomb new.
-	square0 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: effect1
-		thatGivesCard: false.
-	square2 := Square
-		withAnEffect: effect2
-		thatGivesCard: false.
-	square3 := Square
-		withAnEffect: effect3
-		thatGivesCard: false.
-	square4 := Square
-		withAnEffect: effect4
-		thatGivesCard: false.
-	square5 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
+	square0 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square1 := Square withAnEffect: effect1 thatGivesCard: false.
+	square2 := Square withAnEffect: effect2 thatGivesCard: false.
+	square3 := Square withAnEffect: effect3 thatGivesCard: false.
+	square4 := Square withAnEffect: effect4 thatGivesCard: false.
+	square5 := Square withAnEffect: nonEffect thatGivesCard: false.
 	squares := Dictionary
 		newFrom:
 			{(0 -> square0).
@@ -543,7 +473,8 @@ JudgeTest >> testJugdeTellsRankingOfAPlayer [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: deck.
 	judge validateTurnOf: player1.
 	player1 playsATurnWith: dices1.
 	judge validateRoundsOfPlayers.
@@ -588,7 +519,11 @@ JudgeTest >> testTellLastCardPlayedToJudge [
 	players
 		add: player1;
 		add: player2.
-	judge := Judge named: 'Pitana' assuring: players on: Board new.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: Board new
+		with: deck.
 	player1 playCard: card1 applyTo: player2 andTellJudge: judge.
 	self assert: judge lastCardPlayed equals: card1
 ]

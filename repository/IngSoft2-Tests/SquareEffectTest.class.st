@@ -5,7 +5,9 @@ Class {
 		'gamepiece1',
 		'gamepiece2',
 		'gamepiece3',
-		'gamepieces'
+		'gamepieces',
+		'cards',
+		'aDeckOfCards'
 	],
 	#category : #'IngSoft2-Tests'
 }
@@ -24,6 +26,8 @@ SquareEffectTest >> setUp [
 		add: gamepiece1;
 		add: gamepiece2;
 		add: gamepiece3.
+	cards:=(CardCreator new) createNCards: 5.
+	aDeckOfCards:= CardsDeck withCards: cards asOrderedCollection .
 
 ]
 
@@ -33,15 +37,9 @@ SquareEffectTest >> testApplyAtomicBombToAGamePiece [
 	effect0 := NonEffect new.
 	effect1 := AtomicBomb new.
 	effect2 := NonEffect new.
-	square0 := Square
-		withAnEffect: effect0
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: effect1
-		thatGivesCard: false.
-	square2 := Square
-		withAnEffect: effect2
-		thatGivesCard: false.
+	square0 := Square withAnEffect: effect0 thatGivesCard: false.
+	square1 := Square withAnEffect: effect1 thatGivesCard: false.
+	square2 := Square withAnEffect: effect2 thatGivesCard: false.
 	squares := Dictionary
 		newFrom:
 			{(0 -> square0).
@@ -72,7 +70,8 @@ SquareEffectTest >> testApplyAtomicBombToAGamePiece [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: aDeckOfCards.
 	judge validateTurnOf: player1.
 	player1 playsATurnWith: dices1.
 	judge validateRoundsOfPlayers.

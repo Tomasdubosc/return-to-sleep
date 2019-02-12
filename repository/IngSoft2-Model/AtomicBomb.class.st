@@ -11,3 +11,8 @@ Class {
 AtomicBomb >> applyEffectTo: aGamePiece ofGamepieceCollection: aCollectionOfPieces [
 	aCollectionOfPieces do: [ :each | each changePositionTo: each position - each positionOnBoard ].
 ]
+
+{ #category : #Accesing }
+AtomicBomb >> name [
+^'an AtomicBomb'
+]

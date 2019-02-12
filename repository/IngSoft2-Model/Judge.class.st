@@ -11,14 +11,19 @@ Class {
 		'players',
 		'lastCardPlayed',
 		'cardCreator',
-		'playerHasWon'
+		'playerHasWon',
+		'deckOfCards'
 	],
 	#category : #'IngSoft2-Model'
 }
 
 { #category : #Creating }
-Judge class >> named: aName assuring: players on: aBoard [
-	^ self new initializeNamed: aName assuring: players on: aBoard
+Judge class >> named: aName assuring: players on: aBoard with: aDeckOfCards [
+	^ self new
+		initializeNamed: aName
+		assuring: players
+		on: aBoard
+		with: aDeckOfCards
 ]
 
 { #category : #Accesing }
@@ -41,21 +46,21 @@ Judge >> giveCardTo: aPlayer [
 	square := board squares at: positionOfPlayerOnBoard.
 	square givesCard
 		ifTrue: [ 
-			giftedCard:= cardCreator createAndReturnACard.
+			giftedCard:= deckOfCards nextCard.
 			aPlayer receivesCard: giftedCard.		
 			^ giftedCard. 
 			]
 ]
 
 { #category : #Initializing }
-Judge >> initializeNamed: aName assuring: anOrderedCollectionOfPlayers on: aBoard [
+Judge >> initializeNamed: aName assuring: anOrderedCollectionOfPlayers on: aBoard with: aDeckOfCards [
 	name := aName.
 	players := anOrderedCollectionOfPlayers.
 	playingSequence := PlayingSequence withAllPlayers: anOrderedCollectionOfPlayers.
 	board := aBoard.
 	playerHasWon := false.
 	lastCardPlayed := false.
-	cardCreator := CardCreator withTotalTypesOfCardsKnowingNumberOfPlayers: players size
+	deckOfCards := aDeckOfCards.
 ]
 
 { #category : #Accesing }
