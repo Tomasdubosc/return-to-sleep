@@ -5,8 +5,7 @@ Class {
 	#name : #Speed,
 	#superclass : #Card,
 	#instVars : [
-		'value',
-		'id'
+		'value'
 	],
 	#category : #'IngSoft2-Model'
 }

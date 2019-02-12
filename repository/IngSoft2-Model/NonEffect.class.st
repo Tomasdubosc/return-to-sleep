@@ -10,3 +10,8 @@ Class {
 { #category : #Accesing }
 NonEffect >> applyEffectTo: aGamePiece ofGamepieceCollection: aCollectionOfPieces [
 ]
+
+{ #category : #Accesing }
+NonEffect >> name [
+^'a NonEffect'
+]

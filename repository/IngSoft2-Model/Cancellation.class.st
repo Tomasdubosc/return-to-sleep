@@ -5,8 +5,7 @@ Class {
 	#name : #Cancellation,
 	#superclass : #Card,
 	#instVars : [
-		'value',
-		'id'
+		'value'
 	],
 	#category : #'IngSoft2-Model'
 }

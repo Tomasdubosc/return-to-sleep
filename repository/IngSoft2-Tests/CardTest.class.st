@@ -1,8 +1,18 @@
 Class {
 	#name : #CardTest,
 	#superclass : #TestCase,
+	#instVars : [
+		'newCards',
+		'aDeckOfCards'
+	],
 	#category : #'IngSoft2-Tests'
 }
+
+{ #category : #'card-tests' }
+CardTest >> setUp [
+newCards:=(CardCreator new) createNCards: 5.
+	aDeckOfCards:= CardsDeck withCards: newCards asOrderedCollection .
+]
 
 { #category : #'card-tests' }
 CardTest >> testAccelerationCard [
@@ -27,7 +37,11 @@ CardTest >> testAccelerationCard [
 		add: player2.
 	dices := Set new.
 	dices add: (LoadedDice withFaces: 1).
-	judge := Judge named: 'Pitana' assuring: players on: Board new.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: Board new
+		with: aDeckOfCards.
 	player1 playsATurnWith: dices.
 	self assert: player1 gamepiece position equals: 1.
 	player1 playCard: card2 applyTo: players andTellJudge: judge.
@@ -49,12 +63,18 @@ CardTest >> testAccelerationCard [
 	self
 		should: [ player1 playCard: card2 applyTo: players andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ].
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ].
 	judge changeTurnOfPlayers.
 	self
 		should: [ player2 playCard: 4 applyTo: players andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ]
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ]
 ]
 
 { #category : #'card-tests' }
@@ -71,14 +91,18 @@ CardTest >> testCancellationCard [
 		andOtherCard: card2.
 	player2 := Player
 		withName: 'Dubi'
-		aGamePiece: (Gamepiece withInitialPosition)
+		aGamePiece: Gamepiece withInitialPosition
 		aCard: card3
 		andOtherCard: card4.
 	players := OrderedCollection new.
 	players
 		add: player1;
 		add: player2.
-	judge := Judge named: 'Pitana' assuring: players on: Board new.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: Board new
+		with: aDeckOfCards.
 	dices := Set new.
 	dices add: (LoadedDice withFaces: 1).
 	player1 playsATurnWith: dices.
@@ -106,7 +130,10 @@ CardTest >> testCancellationCard [
 				removingCardEffectCausedByCard: card1
 				andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ].
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ].
 	player2
 		playCard: card4
 		applyTo: players
@@ -123,7 +150,10 @@ CardTest >> testCancellationCard [
 				removingCardEffectCausedByCard: card2
 				andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ]
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ]
 ]
 
 { #category : #'card-tests' }
@@ -170,7 +200,11 @@ CardTest >> testOverloadCard [
 		add: player2.
 	dices := Set new.
 	dices add: (LoadedDice withFaces: 1).
-	judge := Judge named: 'Pitana' assuring: players on: Board new.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: Board new
+		with: aDeckOfCards.
 	player1 playsATurnWith: dices.
 	judge changeTurnOfPlayers.
 	self assert: player1 gamepiece position equals: 1.
@@ -191,11 +225,17 @@ CardTest >> testOverloadCard [
 	self
 		should: [ player2 playCard: card3 applyTo: player1 andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ].
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ].
 	self
 		should: [ player2 playCard: card4 applyTo: player1 andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ]
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ]
 ]
 
 { #category : #'card-tests' }
@@ -221,7 +261,11 @@ CardTest >> testRedoCard [
 		add: player2.
 	dices := Set new.
 	dices add: (LoadedDice withFaces: 1).
-	judge := Judge named: 'Pitana' assuring: players on: Board new.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: Board new
+		with: aDeckOfCards.
 	player1 playCard: card1 applyTo: player2 andTellJudge: judge.
 	player2 playsATurnWith: dices.
 	self assert: player2 gamepiece position equals: -1.
@@ -254,7 +298,10 @@ CardTest >> testRedoCard [
 				redoingCardEffectMadeByCard: judge lastCardPlayed
 				andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ].
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ].
 	self
 		should: [ player2
 				playCard: card4
@@ -263,7 +310,10 @@ CardTest >> testRedoCard [
 				removingCardEffectCausedByCard: card1
 				andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ]
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ]
 ]
 
 { #category : #'card-tests' }
@@ -312,15 +362,25 @@ CardTest >> testRepeatCard [
 			(2 -> square2).
 			(3 -> square3).
 			(4 -> square4)}.
-	board := Board withSquares: squares gamepieces: gamepieces andRounds: 2.
-	judge := Judge named: 'Pitana' assuring: players on: board.
+	board := Board
+		withSquares: squares
+		gamepieces: gamepieces
+		andRounds: 2.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: board
+		with: aDeckOfCards.
 	judge validateTurnOf: player1.
 	player1 playsATurnWith: dices.
 	judge validateRoundsOfPlayers.
 	board updateGamepiecesPositionOnBoard.
 	board applyEffectToAGamepiece: gamepiece1.
 	self assert: player1 gamepiece position equals: 6.
-	player2 playCard: card4 applyingEffect: board lastSquareEffectApplied andTellJudge: judge.
+	player2
+		playCard: card4
+		applyingEffect: board lastSquareEffectApplied
+		andTellJudge: judge.
 	self assert: player1 gamepiece position equals: 8
 ]
 
@@ -357,21 +417,11 @@ CardTest >> testRepeatCardWithAnNonEffect [
 		add: gamepiece2.
 	nonEffect := NonEffect new.
 	effect4 := AtomicBomb new.
-	square0 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square1 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square2 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square3 := Square
-		withAnEffect: nonEffect
-		thatGivesCard: false.
-	square4 := Square
-		withAnEffect: effect4
-		thatGivesCard: false.
+	square0 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square1 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square2 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square3 := Square withAnEffect: nonEffect thatGivesCard: false.
+	square4 := Square withAnEffect: effect4 thatGivesCard: false.
 	squares := Dictionary
 		newFrom:
 			{(0 -> square0).
@@ -386,7 +436,8 @@ CardTest >> testRepeatCardWithAnNonEffect [
 	judge := Judge
 		named: 'Pitana'
 		assuring: players
-		on: board.
+		on: board
+		with: aDeckOfCards.
 	judge validateTurnOf: player1.
 	player1 playsATurnWith: dices.
 	judge validateRoundsOfPlayers.
@@ -448,7 +499,11 @@ CardTest >> testSpeedCard [
 	players
 		add: player1;
 		add: player2.
-	judge := Judge named: 'Pitana' assuring: players on: Board new.
+	judge := Judge
+		named: 'Pitana'
+		assuring: players
+		on: Board new
+		with: aDeckOfCards.
 	player1 playsATurnWith: dices.
 	judge changeTurnOfPlayers.
 	self assert: player1 gamepiece position equals: 1.
@@ -469,11 +524,17 @@ CardTest >> testSpeedCard [
 	self
 		should: [ player2 playCard: card3 applyTo: player1 andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ].
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ].
 	judge changeTurnOfPlayers.
 	judge changeTurnOfPlayers.
 	self
 		should: [ player2 playCard: card4 applyTo: player1 andTellJudge: judge ]
 		raise: CardBelongToPlayerFailed
-		withExceptionDo: [ :exception | self assert: exception messageText equals: 'This player does not have this card' ]
+		withExceptionDo: [ :exception | 
+			self
+				assert: exception messageText
+				equals: 'This player does not have this card' ]
 ]

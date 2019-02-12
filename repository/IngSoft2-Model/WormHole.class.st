@@ -24,3 +24,8 @@ WormHole >> applyEffectTo: aGamePiece ofGamepieceCollection: aCollection [
 WormHole >> initializeWithADecrement: aPowerValue [
 	decrement := aPowerValue
 ]
+
+{ #category : #Accesing }
+WormHole >> name [
+^'a WormHole'
+]

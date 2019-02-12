@@ -6,43 +6,93 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'totalTypesOfCards',
-		'iteratingIDNumber'
+		'iteratingIDNumber',
+		'numberOfCard',
+		'totalCardsOfEachType',
+		'cards'
 	],
 	#category : #'IngSoft2-Model'
 }
 
-{ #category : #Creating }
-CardCreator class >> withTotalTypesOfCardsKnowingNumberOfPlayers: numberOfPlayers [
-	^ self new initializeWithTotalTypesOfCardsKnowingNumberOfPlayers: numberOfPlayers
+{ #category : #Accesing }
+CardCreator >> addAcelerationCards [
+| totalNumberOfAccelerationCards |
+totalNumberOfAccelerationCards:=(totalCardsOfEachType at:1 ).
+	[ totalNumberOfAccelerationCards > 0 ]
+		whileTrue: [ cards add: Acceleration withValue.
+			totalNumberOfAccelerationCards:=totalNumberOfAccelerationCards-1. ]
 ]
 
 { #category : #Accesing }
-CardCreator >> createAndReturnACard [
-	| typeNumber typeOfCards |
-	self incrementIteratingIDNumber.
-	typeNumber := iteratingIDNumber % totalTypesOfCards.
-	typeOfCards := Array
-		with: Overload withValue
-		with: Acceleration withValue
-		with: Speed withValue
-		with: Cancellation withValue
-		with: Repeat withValue
-		with: Redo withValue.
-	^ (typeOfCards at: typeNumber). 
+CardCreator >> addCancelattionCards [
+| totalNumberOfCancellationCards |
+totalNumberOfCancellationCards:=(totalCardsOfEachType at:6 ).
+	[ totalNumberOfCancellationCards > 0 ]
+		whileTrue: [ cards add: Cancellation withValue.
+			totalNumberOfCancellationCards:=totalNumberOfCancellationCards-1. ]
 ]
 
 { #category : #Accesing }
-CardCreator >> incrementIteratingIDNumber [
-	iteratingIDNumber := (iteratingIDNumber +1).
-]
-
-{ #category : #Initializing }
-CardCreator >> initializeWithTotalTypesOfCardsKnowingNumberOfPlayers: numberOfPlayers [
-	totalTypesOfCards := 6.
-	iteratingIDNumber := numberOfPlayers * 2 + 1.
+CardCreator >> addOverloadCards [
+| totalNumberOfOverloadCards |
+totalNumberOfOverloadCards:=(totalCardsOfEachType at:2 ).
+	[ totalNumberOfOverloadCards > 0 ]
+		whileTrue: [ cards add: Overload withValue.
+			totalNumberOfOverloadCards:=totalNumberOfOverloadCards-1. ]
 ]
 
 { #category : #Accesing }
-CardCreator >> totalTypesOfCards [
-	^ totalTypesOfCards
+CardCreator >> addRedoCards [
+| totalNumberOfRedoCards |
+totalNumberOfRedoCards:=(totalCardsOfEachType at:4).
+	[ totalNumberOfRedoCards > 0 ]
+		whileTrue: [ cards add: Redo withValue.
+			totalNumberOfRedoCards:=totalNumberOfRedoCards-1. ]
+]
+
+{ #category : #Accesing }
+CardCreator >> addRepeatCards [
+| totalNumberOfRepeatCards |
+totalNumberOfRepeatCards:=(totalCardsOfEachType at:5).
+	[ totalNumberOfRepeatCards > 0 ]
+		whileTrue: [ cards add: Repeat withValue.
+			totalNumberOfRepeatCards:=totalNumberOfRepeatCards-1. ]
+]
+
+{ #category : #Accesing }
+CardCreator >> addSpeedCards [
+| totalNumberOfSpeedCards |
+totalNumberOfSpeedCards:=(totalCardsOfEachType at:3).
+	[ totalNumberOfSpeedCards > 0 ]
+		whileTrue: [ cards add: Speed withValue.
+			totalNumberOfSpeedCards:=totalNumberOfSpeedCards-1. ]
+]
+
+{ #category : #Accesing }
+CardCreator >> calculateProportionsOfCards: totalNumberOfCards [
+|   accelerationCards overloadCards speedCards redoCards repeatCards cancelationCards quantityOfCardsByType |
+	accelerationCards := (totalNumberOfCards * 0.2) floor.
+	overloadCards := (totalNumberOfCards * 0.2) floor.
+	speedCards := (totalNumberOfCards * 0.2) floor.
+	redoCards := (totalNumberOfCards * 0.2) floor.
+	repeatCards := (totalNumberOfCards * 0.2) floor.
+	cancelationCards:= totalNumberOfCards - accelerationCards - overloadCards - speedCards - redoCards-repeatCards.
+	quantityOfCardsByType := Array with: accelerationCards with:overloadCards with:speedCards with:redoCards with:repeatCards with:cancelationCards.
+	^quantityOfCardsByType.
+]
+
+{ #category : #Accesing }
+CardCreator >> createNCards: totalNumberOfCards [
+	totalCardsOfEachType := self calculateProportionsOfCards: totalNumberOfCards.
+	cards:= OrderedCollection new.
+	self addAcelerationCards.
+	self addOverloadCards.
+	self addSpeedCards.
+	self addRedoCards.
+	self addRepeatCards.
+	self addCancelattionCards.
+	
+	
+	^ cards.
+	
 ]

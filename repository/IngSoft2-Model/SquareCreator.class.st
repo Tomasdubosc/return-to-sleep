@@ -63,7 +63,7 @@ SquareCreator >> createSquares [
 	squares := Dictionary new.
 	numberOfSquare := 0.
 	
-	self assign: (Square withAnEffect: NonEffect  new thatGivesCard: false) to: squares.
+	self assign: (Square withAnEffect: (NonEffect  new) thatGivesCard: false) to: squares.
 	self assign: (Square withAnEffect: (MoonWalk withAPowerValue: 1) thatGivesCard: false) to: squares.
 	
 	self assign: (Square withAnEffect: (SpeedUp withAPowerValue: 4) thatGivesCard: false) to: squares.

@@ -25,3 +25,8 @@ SpeedUp >> applyEffectTo: aGamePiece ofGamepieceCollection: aGamePieceCollection
 SpeedUp >> initializeWithAnIncrement: aPowerValue [
 	increment := aPowerValue
 ]
+
+{ #category : #Accesing }
+SpeedUp >> name [
+^'a SpeedUp'
+]
